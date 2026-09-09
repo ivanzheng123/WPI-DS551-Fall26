@@ -52,10 +52,24 @@ def policy_evaluation(P, nS, nA, policy, gamma=0.9, tol=1e-8):
     """
     
     value_function = np.zeros(nS)
-    ############################
-    # YOUR IMPLEMENTATION HERE #
-    #                          #
-    ############################
+
+    delta = 999
+    while delta > tol:
+        delta = 0
+        
+        for i in range(nS):
+            old_value = value_function[i]
+            new_value = 0
+
+            for action in range(nA):
+                for probability, nextState, reward, terminal in P[i][action]:
+                    if terminal:
+                        new_value += policy[i][action] * probability * reward
+                    else:
+                        new_value += policy[i][action] * probability * (reward + value_function[nextState] * gamma)
+
+            value_function[i] = new_value
+            delta = max(delta, abs(old_value - new_value))
     return value_function 
 
 
@@ -77,10 +91,16 @@ def policy_improvement(P, nS, nA, value_from_policy, gamma=0.9):
     """
 
     new_policy = np.ones([nS, nA]) / nA # policy as a uniform distribution
-	############################
-	# YOUR IMPLEMENTATION HERE #
-    #                          #
-	############################
+    for i in range (nS):
+        actions = np.zeros(nA)
+        for action in range(nA):
+            new_action = 0
+            for probability, nextState, reward, terminal in P[i][action]:
+                    new_action += probability * (reward + gamma * value_from_policy[nextState])
+            actions[action] = new_action
+        newArr = np.zeros(nA)
+        newArr[np.argmax(actions)] = 1
+        new_policy[i] = newArr
     return new_policy
 
 
@@ -103,10 +123,16 @@ def policy_iteration(P, nS, nA, policy, gamma=0.9, tol=1e-8):
     V: np.ndarray[nS]
     """
     new_policy = policy.copy()
-	############################
-	# YOUR IMPLEMENTATION HERE #
-    #                          #
-	############################
+
+    while True:
+        V = policy_evaluation(P, nS, nA, new_policy, gamma, tol)
+        updated_policy = policy_improvement(P, nS, nA, V, gamma)
+
+        if np.array_equal(updated_policy, new_policy):
+            break
+
+        new_policy = updated_policy
+
     return new_policy, V
 
 def value_iteration(P, nS, nA, V, gamma=0.9, tol=1e-8):
@@ -129,10 +155,22 @@ def value_iteration(P, nS, nA, V, gamma=0.9, tol=1e-8):
     """
     V_new = V.copy()
     policy_new = np.zeros([nS, nA])
-    ############################
-    # YOUR IMPLEMENTATION HERE #
-    #                          #
-    ############################
+    delta = 99999
+    while delta > tol:
+        delta = 0
+        for i in range(nS):
+            v = V_new[i]
+            action_vals = np.zeros(nA)
+            for action in range(nA):
+                for probability, nextState, reward, terminal in P[i][action]:
+                    if terminal:
+                        action_vals[action] += probability * reward
+                    else:
+                        action_vals[action] += probability * (reward + gamma * V_new[nextState])
+            V_new[i] = np.max(action_vals)
+            delta = max(delta, abs(v - V_new[i]))
+
+    policy_new = policy_improvement(P, nS, nA, V_new, gamma)
     return policy_new, V_new
 
 def render_single(env, policy, render = False, n_episodes=100):
@@ -160,10 +198,13 @@ def render_single(env, policy, render = False, n_episodes=100):
         while not done: # using "not truncated" as well, when using time_limited wrapper.
             if render:
                 env.render() # render the game
-            ############################
-            # YOUR IMPLEMENTATION HERE #
-            #                          #
-            ############################
+            action = np.argmax(policy[ob])
+
+            new_ob, reward, terminated, truncated, _ = env.step(action)
+
+            total_rewards += reward
+            ob = new_ob
+            done = terminated or truncated
             
     return total_rewards
 

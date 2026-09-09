@@ -16,13 +16,13 @@
 
 
 
-<img src="/Project1/img/hw1.png" width="80%">
+<img src="../Project1/img/hw1.png" width="80%">
 
 * See more details of FrozenLake on [OpenAI Gymnasium](https://gymnasium.farama.org/environments/toy_text/frozen_lake/).
 
 
 * If your program works, the command line output should look like this.
-<img src="/Project1/img/UnitTest2023.png" width="80%">
+<img src="../Project1/img/UnitTest2023.png" width="80%">
 
 ## Deliverables
 
@@ -40,13 +40,13 @@ prefer; the autograder accepts either.
 ## Hints
 * Policy Evaluation<br/>
 <span style="color:red">**Please note that reward can be defined on (state), (state, action), (state, action, next_state). In this assignment, we define the reward on (state,action,next_state).** The following pseudocode is the general method.</span>
-<img src="/Project1/img/pe.png" width="80%" >
+<img src="../Project1/img/pe.png" width="80%" >
 
 * Policy Iteration<br/>
-<img src="/Project1/img/pi.png" width="80%" >
+<img src="../Project1/img/pi.png" width="80%" >
 
 * Value Iteration<br/>
-<img src="/Project1/img/vi.png" width="80%" >
+<img src="../Project1/img/vi.png" width="80%" >
 
 
 ## Setup
