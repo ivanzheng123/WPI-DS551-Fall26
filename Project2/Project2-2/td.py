@@ -41,6 +41,11 @@ def epsilon_greedy(Q, state, nA, epsilon = 0.1):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    choice = np.random.choice(2, p=[(1-epsilon), epsilon])
+    if choice == 0:
+        action = np.argmax(Q[state])
+    else:
+        action = np.random.randint(nA)
     return action
 
 def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
@@ -77,6 +82,25 @@ def sarsa(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    for i in range(n_episodes):
+        state, info = env.reset()
+        action = epsilon_greedy(Q, state, env.action_space.n, epsilon)
+        done = False
+
+        while not done:
+            next_state, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+
+            next_action = epsilon_greedy(Q, next_state, env.action_space.n, epsilon)
+            target = reward + gamma * Q[next_state][next_action]
+
+            Q[state][action] += alpha * (target - Q[state][action])
+
+            if not done:
+                state = next_state
+                action = next_action
+
+        epsilon = 0.99 * epsilon
     return Q
 
 def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
@@ -109,4 +133,17 @@ def q_learning(env, n_episodes, gamma=1.0, alpha=0.5, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    for i in range(n_episodes):
+        state, info = env.reset()
+        done = False
+
+        while not done:
+            action = epsilon_greedy(Q, state, env.action_space.n, epsilon)
+            next_state, reward, terminated, truncated, info = env.step(action)
+            done = truncated or terminated
+
+            target = reward + gamma * np.max(Q[next_state])
+            Q[state][action] += alpha * (target - Q[state][action])
+
+            state = next_state
     return Q

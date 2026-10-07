@@ -38,6 +38,10 @@ def initial_policy(observation):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    if observation[0] >= 20:
+        action = 0
+    else: 
+        action = 1
     return action
 
 
@@ -70,6 +74,37 @@ def mc_prediction(policy, env, n_episodes, gamma=1.0):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    for i in range(n_episodes):
+        episode = []
+        state, info = env.reset()
+        done = False
+
+        while not done:
+            action = policy(state)
+
+            next_state, reward, terminated, truncated, info = env.step(action)
+
+            episode.append((state, reward))
+
+            done = terminated or truncated
+            state = next_state
+
+        G = 0
+
+        for t in range(len(episode) - 1, -1, -1):
+            state, reward = episode[t]
+
+            G = gamma * G + reward
+
+            earlier_states = [
+                episode[j][0]
+                for j in range(t)
+            ]
+
+            if state not in earlier_states:
+                returns_sum[state] += G
+                returns_count[state] += 1
+                V[state] = returns_sum[state] / returns_count[state]
 
     return V
 
@@ -102,6 +137,11 @@ def epsilon_greedy(Q, state, nA, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+    choice = np.random.choice(2, p=[(1-epsilon), epsilon])
+    if np.random.rand() < epsilon:
+        action = np.random.randint(nA)
+    else:
+        action = int(np.argmax(Q[state]))
     return action
 
 
@@ -140,5 +180,38 @@ def mc_control_epsilon_greedy(env, n_episodes, gamma=1.0, epsilon=0.1):
     # YOUR IMPLEMENTATION HERE #
     #                          #
     ############################
+
+    for i in range(n_episodes):
+        state, info = env.reset()
+        episode = []
+        done = False
+
+
+        while not done:
+            action = epsilon_greedy(Q, state, env.action_space.n, epsilon)
+            next_state, reward, terminated, truncated, info = env.step(action)
+            episode.append((state, action, reward))
+
+            state = next_state
+            done = truncated or terminated
+
+        G = 0
+
+        for t in range(len(episode) - 1, -1, -1):
+            state, action, reward = episode[t]
+            G = G * gamma + reward
+
+            earlier_state_actions = [
+                (episode[j][0], episode[j][1])
+                for j in range(t)
+            ]
+
+            if (state, action) not in earlier_state_actions:
+                returns_sum[(state, action)] += G
+                returns_count[(state, action)] += 1
+
+                Q[state][action] = (returns_sum[(state, action)]/ returns_count[(state, action)])
+
+        epsilon = max(0, epsilon - 0.1 / n_episodes)
 
     return Q
