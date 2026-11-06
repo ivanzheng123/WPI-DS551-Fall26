@@ -56,7 +56,7 @@ testing DQN while recording a video (recording video takes time, so usually you 
 ## Goal
 In this project, you will be asked to implement DQN to play [Breakout](https://gymnasium.farama.org/environments/atari/breakout/). This project will be completed in Python 3 using [Pytorch](https://pytorch.org/). The goal of your training is to get averaging reward in 100 episodes over **40 points** in **Breakout** (each episode has 5 lives), with OpenAI's Atari wrapper & clipped reward. For more details, please see the [slides](https://github.com/UrbanIntelligence/WPI-DS551-Fall26/blob/main/Project3/materials/DS551_CS525%20FALL_Project%203%20-%20Deep%20Q-learning.pdf).
 
-<img src="/Project3/materials/project3.png" width="80%" >
+<img src="../Project3/materials/project3.png" width="80%" >
 
 ## Deliverables
 
@@ -80,7 +80,7 @@ Please submit the following files to Canvas:
     * X-axis: number of episodes
     * Y-axis: average reward in last 30 episodes.
     
-    <img src="/Project3/materials/plot.png" width="60%" >
+    <img src="../Project3/materials/plot.png" width="60%" >
 
 * **Python Code** (Will be autograded by Canvas GradeScope)
   * All the code you implemented, including agent_dqn.py, dqn_model.py, and optionally argument.py (if updated)
